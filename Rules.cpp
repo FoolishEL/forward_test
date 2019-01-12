@@ -2,16 +2,19 @@
 int Rules::violation_id(car & CAR)
 {
 	int answer = 0,tmp;
-	if (this->road_cross())
-		answer = 1;
-	if (this->wrong_dir(CAR))
-		answer = 3;
-	if (this->sep_cross())
-		answer = 2;
-	if (tmp = this->turn(CAR))
-		answer = tmp;
-	return answer;
-	
+	if (road_cross())
+		answer += 1;
+	if (sep_cross())
+		answer += 1<<1;
+	if (tmp = turn(CAR)) 
+	{
+		answer += 1 << (tmp - 1);
+		return answer;
+	}
+	if (wrong_dir(CAR))
+		if(!sep_cross())
+		answer += 1 << 2;
+	return answer;	
 }
 
 Rules::Rules(int gap, int xs,way * way)
@@ -167,16 +170,19 @@ int Rules::turn(car & CAR)
 int Rules1::violation_id(car & CAR)
 {
 	int answer = 0, tmp;
-	if (this->road_cross())
-		answer = 1;
-	if (this->wrong_dir(CAR))
-		answer = 3;
-	if (this->sep_cross())
-		answer = 2;
-	if (tmp = this->turn(CAR))
-		answer = tmp;
+	if (road_cross())
+		answer += 1;
+	if (sep_cross())
+		answer += 1 << 1;
+	if (tmp = turn(CAR))
+	{
+		answer += 1 << (tmp - 1);
+		return answer;
+	}
+	if (wrong_dir(CAR))
+		if (!sep_cross())
+			answer += 1 << 2;
 	return answer;
-
 }
 
 Rules1::Rules1(int gap, int xs, way * way)
