@@ -139,6 +139,7 @@ int APIENTRY _tWinMain(HINSTANCE This, HINSTANCE Prev, LPTSTR cmd, int mode)
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	int tmp;
 	PAINTSTRUCT ps;
 	RECT rc;
 	rc.top = 1000;
@@ -182,7 +183,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			MessageBox(NULL, "Левостороннее движение!", "Внимание", MB_OK);
 			PostMessage(hWnd, WM_KEYDOWN, VK_TAB, 0);
 			break;
-
 		}
 		break;
 	case  WM_WINDOWPOSCHANGING:
@@ -212,9 +212,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			switch (rool_nmbr)
 			{
 			case 1:
-				Car = new car(1000-x_s, y_s, dir_s);
+				Car = new car(1000 - x_s, y_s, dir_s);
 				Way = new way;
-				Way->add_point(1000-x_s, y_s);
+				Way->add_point(1000 - x_s, y_s);
 				MainRule = new Rules1(Rmode, 525, Way);
 				break;
 			default:
@@ -235,36 +235,42 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			InvalidateRect(hWnd, NULL, TRUE);
 			break;
 		case VK_UP:
-			Car->forward(&road_,*Way);
-			switch (MainRule->violation_id(*Car))
-			{
-			case 1:
+			Car->forward(&road_, *Way);
+			tmp = MainRule->violation_id(*Car);
+			/*	switch (tmp)
+				{*/
+			if (1 & tmp) {
 				turning = false;
 				MessageBox(NULL, "Пересечение края проезжей части!", "Нарушение", MB_OK);
-				break;
-			case 2:
+			}
+			//				break;
+			if ((1<<1) & tmp) {
 				MessageBox(NULL, "Пересечение сплошной!", "Нарушение", MB_OK);
 				turning = false;
-				break;
-			case 3:
-				MessageBox(NULL, "Езда 'против шерсти'!", "Нарушение", MB_OK);
-				turning = false;
-				break;
-			case 4:
-				//в процессе разворота
-				turning = true;
-				break;
-			case 5:
-				turning = false;
-				MessageBox(NULL, "Произведён разворот!", "Уведомление", MB_OK);
-				break;
-			default:
-				break;
 			}
+			//				break;
+			if ((1<<2) & tmp){
+				MessageBox(NULL, "Езда 'против шерсти'!", "Нарушение", MB_OK);
+			turning = false;
+		}
+	//			break;
+		if ((1<<3) & tmp) {
+			//в процессе разворота
+			turning = true;
+//			break;
+		}
+		if ((1<<4) & tmp) {
+			turning = false;
+			MessageBox(NULL, "Произведён разворот!", "Уведомление", MB_OK);
+		}
+	//			break;
+		/*	default:
+				break;
+			}*/
 			InvalidateRect(hWnd, NULL, TRUE);
 			break;
-		default:
-			break;
+		//default:
+		//	break;
 		}
 	case WM_PAINT:
 		//рисование
